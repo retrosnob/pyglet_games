@@ -13,20 +13,18 @@ window = Window(500, 500)
 
 @window.event
 def on_draw():
-    global snk_x, snk_y, snk_size, fd_x, fd_y, tail
-    if not game_over:
-        # Erase everything.
-        window.clear()
-        # Test image draw
-        draw_square(snk_x, snk_y, snk_size)
-        # Draw the snake's head.
-        # draw_square(snk_x, snk_y, snk_size)
-        # Draw the food.
-        draw_square(fd_x, fd_y, snk_size, colour = (255, 0, 0, 0))
-        # Draw a square for each coordinate in the tail.
-        for coords in tail:
-            draw_square(coords[0], coords[1], snk_size, colour = (127, 127, 127, 0))
-    else:
+    # Erase everything.
+    window.clear()
+    # Test image draw
+    # Draw the food.
+    draw_square(fd_x, fd_y, snk_size, colour = (255, 0, 0, 0))
+    # Draw a square for each coordinate in the tail.
+    for coords in tail:
+        draw_square(coords[0], coords[1], snk_size, colour = (127, 127, 127, 0))
+    # Draw the snake's head.
+    draw_square(snk_x, snk_y, snk_size)
+    # Draw the game over message if the game is over.
+    if game_over:
         draw_game_over()
     
 
@@ -35,7 +33,7 @@ def draw_square(x, y, size, colour = (255, 255, 255, 0)):
     img.blit(x, y)
     
 def draw_game_over():
-    game_over_screen = text.Label('Game Over', font_size=24,
+    game_over_screen = text.Label(f'Score: {len(tail)}', font_size=24,
                     x=window.width//2, y=window.height//2,
                     anchor_x='center', anchor_y='center')
     game_over_screen.draw()
@@ -44,30 +42,44 @@ def draw_game_over():
 def on_key_press(symbol, modifiers):
     # Standard up, down, left, right.
     # The global keyword means 'use the variables that are defined at the module
-    # level, instead of declaring a new variable local to this function.
-    global snk_dx, snk_dy, app
+    # level, instead of declaring a new variable local to this function. It is required
+    # when you want to assign inside a function to a variable that has been defined
+    # outside the function. If you just reference the variable that has been defined outside
+    # the function, without assigning to it, then you use the global definition automatically.
+    global snk_dx, snk_dy
     if not game_over:
         if symbol == key.LEFT:
-            snk_dx = -snk_size
-            snk_dy = 0
+            if snk_dx == 0:
+                snk_dx = -snk_size
+                snk_dy = 0
         elif symbol == key.RIGHT:
-            snk_dx = snk_size
-            snk_dy = 0
+            if snk_dx == 0:
+                snk_dx = snk_size
+                snk_dy = 0
         elif symbol == key.UP:
-            snk_dx = 0
-            snk_dy = snk_size
+            if snk_dy == 0:
+                snk_dx = 0
+                snk_dy = snk_size
         elif symbol == key.DOWN:
-            snk_dx = 0
-            snk_dy = -snk_size
+            if snk_dy == 0:
+                snk_dx = 0
+                snk_dy = -snk_size
+
+def game_over_condition():
+    # Collision with edge.
+    condition1 = snk_x + snk_dx < 0 or snk_x + snk_dx > window.width - snk_size or snk_y + snk_dy < 0 or snk_y + snk_dy > window.height - snk_size
+    # Collision with self.
+    condition2 = (snk_x, snk_y) in tail
+    return condition1 or condition2
 
 def update(dt):
-    global snk_x, snk_y, snk_dx, snk_dy, snk_size, new_food, fd_x, fd_y, tail, app, game_over, window
+    global snk_x, snk_y, new_food, fd_x, fd_y, game_over
 
-    # Check for collision with edge.
-    if snk_x + snk_dx < 0 or snk_x + snk_dx > window.width - snk_size or snk_y + snk_dy < 0 or snk_y + snk_dy > window.height - snk_size:
+    # Check for game over conditions
+    if game_over_condition():
         game_over = True
-        # app.exit()
-        # window.close()
+
+    if game_over:
         return
 
     # Add a new tail square behind us
@@ -75,9 +87,9 @@ def update(dt):
     # Update the position of the snake's head.
     snk_x += snk_dx
     snk_y += snk_dy
+
     # Check for collision with food.
     if snk_x == fd_x and snk_y == fd_y:
-        print('Yum')
         new_food = True
         # Don't remove the new tail square because we ate food.
     else:
@@ -85,7 +97,6 @@ def update(dt):
         tail.pop(0)
     if new_food:
         # Move the food to a new random location.
-        print(f'New food at {fd_x} {fd_y}')
         # Create new food in a random place, ensuring that it doesn't land between cells.
         fd_x = randint(0, (window.width // snk_size) - 1) * snk_size
         fd_y = randint(0, (window.height // snk_size) - 1) * snk_size
