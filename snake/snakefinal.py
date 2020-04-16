@@ -76,7 +76,7 @@ def game_over_condition():
     return condition1 or condition2
 
 def update(dt):
-    global snk_x, snk_y, new_food, fd_x, fd_y, game_over
+    global snk_x, snk_y, fd_x, fd_y, game_over
 
     # Check for game over conditions
     if game_over_condition():
