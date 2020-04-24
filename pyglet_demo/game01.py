@@ -28,6 +28,11 @@ def on_key_press(symbol, modifiers):
         plyr_dx = 0
         plyr_dy = -plyr_speed
 
+@window.event
+def on_key_release(symbol, modifiers):
+    global plyr_dx, plyr_dy
+    plyr_dx, plyr_dy = 0, 0
+
 def update(dt):
     player_sprite.x += plyr_dx * dt
     player_sprite.y += plyr_dy * dt
