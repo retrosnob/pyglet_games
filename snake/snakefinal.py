@@ -87,8 +87,9 @@ def on_key_press(symbol, modifiers):
             if snk_dy == 0:
                 snk_dx = 0
                 snk_dy = -cell_size
-    elif symbol == key.SPACE:
-        new_game()
+    else:
+        if symbol == key.SPACE:
+          new_game()
 
 def game_over_condition():
     # Collision with edge.

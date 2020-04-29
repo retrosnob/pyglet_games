@@ -1,0 +1,32 @@
+Video Commentary
+
+Video 1
+
+Setting up some basic variables and functions
+    COLS = 7
+    ROWS = 6
+    COL_WIDTH = ROW_HEIGHT = 100
+    WIN_WIDTH = COL_WIDTH * COLS
+    on_mouse_press
+    update
+    on_draw
+
+Video 2
+
+Drawing the grid lines
+Drawing a circle
+Drawing a circle at a given x, y
+
+Video 3
+
+Calculating the column of the mouse click
+Defining pieces_per_column
+Updating pieces_per_column
+Ignoring mouse clicks on columns that are full
+Defining the pieces grid
+Updating the pieces grid
+Drawing the pieces grid
+
+Video 4
+
+Distinguishing between players
