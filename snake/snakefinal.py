@@ -138,6 +138,7 @@ bgm5 = resource.media('resources/bgm5.wav')
 playlist = cycle([bgm1, bgm2, bgm3, bgm4, bgm5]) # itertools.cycle - list that loops back to the start when you reach the end
 
 player = media.Player()
+player.loop = True
 player.queue(playlist)
 player.play()
 
