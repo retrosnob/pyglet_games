@@ -12,11 +12,12 @@ from math import sin, cos, pi
 
 COLS = 7 # Don't change.
 ROWS = 6 # Don't change.
-COL_WIDTH = ROW_HEIGHT = 40 # Change board size by adjusting this. 
+COL_WIDTH = ROW_HEIGHT = 80 # Change board size by adjusting this. 
 PIECE_RADIUS = COL_WIDTH * 0.4 # Change piece size by adjusting multiplier in range: 0 < multiplier = 0.5.
-PIECE_SIDES = 6 # Change from 3 (triangle) to largish (~64) for a circle.
+PIECE_SIDES = 64 # Change from 3 (triangle) to largish (~64) for a circle.
 P1_COLOR = (255, 0, 0, 0) # Change P1's piece color.
 P2_COLOR = (0, 0, 255, 0) # Change P2's piece color.
+WIN_LINE_COLOR = (255, 255, 0, 0) # Change the winning line color.
 GRID_COLOR = (63, 63, 63, 0) # Change the color of the grid lines.
 TURN_BAR_HEIGHT = 10 # Don't change much.
 
@@ -27,12 +28,13 @@ window = Window(WIN_WIDTH, WIN_HEIGHT + TURN_BAR_HEIGHT)
 
 def new_game():
     # Resets the global state variables ready for a new game. These variables are explained at the module level.
-    global grid, pieces_per_column, player, last_col_clicked, game_over, winning_line
+    global grid, pieces_per_column, player, last_col_clicked, game_over, winning_line, game_over_msg
     grid = [[0] * COLS for i in range(ROWS)]
     pieces_per_column = [0] * COLS
     player = 1
     last_col_clicked = -1
     game_over = False
+    game_over_msg = ''
     winning_line = ()
     
 @window.event
@@ -53,7 +55,7 @@ def on_key_press(symbol, modifiers):
         new_game()
 
 def update(dt):
-    global last_col_clicked, player, game_over, winning_line
+    global last_col_clicked, player, game_over, winning_line, game_over_msg
     if game_over:
         return
     # The last_col_clicked is -1 if nothing has been clicked since the last update.
@@ -69,8 +71,13 @@ def update(dt):
             winning_line = get_winning_line()
             if len(winning_line) == 4:
                 game_over = True
+                game_over_msg = f'Player {player} wins'
                 print(f'Winning line: {winning_line}')
                 print(f'Player {player} has won.')
+            elif game_is_drawn():
+                game_over = True
+                game_over_msg = 'Draw'
+                print(f'Game is drawn.')
             player = 2 if player == 1 else 1
         # Make sure we notify the mouse event code that the current click has been processed.
         last_col_clicked = -1
@@ -149,16 +156,19 @@ def draw_reg_polygon(x, y, r, n, color=(255, 255, 255, 0)):
         ('c4B', color * n)
     )
 
+def game_is_drawn():
+    return all([i == 6 for i in pieces_per_column])
+
 def draw_winning_line():
     """Highlight the pieces in the winning line"""
     if len(winning_line) == 4:
         # Highlight each piece in the winning line with a small polygon (here a circle).
         for coords in winning_line:
-            draw_reg_polygon(coords[0]  * COL_WIDTH + COL_WIDTH//2, coords[1]  * COL_WIDTH + COL_WIDTH//2, PIECE_RADIUS//2, PIECE_SIDES, color=(255, 255, 0, 0))
+            draw_reg_polygon(coords[0]  * COL_WIDTH + COL_WIDTH//2, coords[1]  * COL_WIDTH + COL_WIDTH//2, PIECE_RADIUS//2, PIECE_SIDES, WIN_LINE_COLOR)
 
 def draw_game_over():
     """Display game over message"""
-    game_over_screen = text.Label(f'Press space to restart', font_size=24,
+    game_over_screen = text.Label(f'{game_over_msg}\nPress space to restart', font_size=24,
                     x=window.width//2, y=window.height//2, width=window.width, align='center',
                     anchor_x='center', anchor_y='center', multiline=True)
     game_over_screen.draw()
@@ -222,6 +232,7 @@ pieces_per_column = [0] * COLS
 player = 1              # The current player. Toggles between 1 and 2.
 last_col_clicked = -1   # The number of the column just clicked on (-1 means no column yet)
 game_over = False       # A flag used by several functions to know when to stop
+game_over_msg = ''
 winning_line = ()       # The coordinates of the winning line, if any, so that it can be highlighted.    
 
 # Set how often the update function is called.
