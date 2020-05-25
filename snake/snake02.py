@@ -26,9 +26,11 @@ def draw_square(x, y, size, colour = (255, 255, 255, 0)):
 def on_key_press(symbol, modifiers):
     # Standard up, down, left, right.
 
-    # The global keyword means 'use the variables that are defined at the module level
-    # level, instead of declaring a new variable local to this function'. If we didn't
-    # use this then we would create new, local versions of the variables.
+    # The global keyword means 'use the variables that are defined at the module
+    # level, instead of declaring a new variable local to this function. It is required
+    # when you want to assign inside a function to a variable that has been defined
+    # outside the function. If you just reference the variable that has been defined outside
+    # the function, without assigning to it, then you use the global definition automatically.
     global snk_dx, snk_dy
 
     # Note how the snake only moves in steps equal to the segment size.

@@ -1,6 +1,5 @@
 from pyglet import app
 from pyglet import image
-from pyglet import clock
 from pyglet.window import Window
 
 # Create the window.
@@ -9,8 +8,10 @@ window = Window(500, 500)
 # This is a built-in function that Pyglet calls when the window appears and when it is updated.
 @window.event
 def on_draw():
+    # Erase everything.
     window.clear()
-    draw_square(snk_x, snk_y, cell_size)    
+    # Draw the snake's head.
+    draw_square(snk_x, snk_y, cell_size, colour = (255, 0, 0, 0))    
 
 # This is a function I wrote just to simplify drawing snake segments.
 def draw_square(x, y, size, colour = (255, 255, 255, 0)):

@@ -25,13 +25,21 @@ def draw_square(x, y, size, colour = (255, 255, 255, 0)):
     # Draws the image on the canvas. x, y is the top-corner of the image.
     img.blit(x, y)
 
+def place_food():
+    global fd_x, fd_y
+    # Set random coordinates for the food, ensuring that it doesn't land between cells.
+    fd_x = randint(0, (window.width // cell_size) - 1) * cell_size
+    fd_y = randint(0, (window.height // cell_size) - 1) * cell_size
+
 @window.event
 def on_key_press(symbol, modifiers):
     # Standard up, down, left, right.
 
-    # The global keyword means 'use the variables that are defined at the module level
-    # level, instead of declaring a new variable local to this function'. If we didn't
-    # use this then we would create new, local versions of the variables.
+    # The global keyword means 'use the variables that are defined at the module
+    # level, instead of declaring a new variable local to this function. It is required
+    # when you want to assign inside a function to a variable that has been defined
+    # outside the function. If you just reference the variable that has been defined outside
+    # the function, without assigning to it, then you use the global definition automatically.
     global snk_dx, snk_dy
 
     # Note how the snake only moves in steps equal to the segment size.
@@ -50,36 +58,27 @@ def on_key_press(symbol, modifiers):
 
 # This function is scheduled to run a certain number of times per second.
 def update(dt):
-    global snk_x, snk_y, new_food, fd_x, fd_y
+    global snk_x, snk_y, fd_x, fd_y
     # Update the position of the snake's head.
     snk_x += snk_dx
     snk_y += snk_dy
 
     # Check for collision with food.
     if snk_x == fd_x and snk_y == fd_y:
-        new_food = True
-
-    # Generate new random coordinates for the food if it's time to replace it.
-    if new_food:
-        # Create new food in a random place, ensuring that it doesn't land between cells.
-        fd_x = randint(0, (window.width // cell_size) - 1) * cell_size
-        fd_y = randint(0, (window.height // cell_size) - 1) * cell_size
-        new_food = False
+        place_food()
 
 # Not the length of the snake, but the width and height of a single snake segment.
 cell_size = 20 
 
 # The amount by which the snake's x and y coordinates change.
 snk_dx, snk_dy = 0, 0 
-
 # Start the snake in the middle, ensuring that it doesn't land between cells.
 snk_x = window.width // cell_size // 2 * cell_size
 snk_y = window.height // cell_size // 2 * cell_size
-
 # Define the coordinates of the food.
 fd_x, fd_y = 0, 0
 # Immediately place the new food somewhere.
-new_food = True
+place_food()
 
 # Set how often the update function is called.
 clock.schedule_interval(update, 1/15)
